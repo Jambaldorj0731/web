@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Noto+Serif:wght@400;700&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: 'Outfit', sans-serif;
+}
+
+:root {
+  --bg: #F7F9FC;
+  --bg1: #EFF4FA;
+  --bg2: #E4EDF7;
+  --card: #FFFFFF;
+  --border: #DCE5F0;
+  --text: #111827;
+  --text2: #4B5563;
+  --text3: #9CA3AF;
+  --blue: #2563EB;
+  --blue2: #3B82F6;
+  --blue-lt: #EFF6FF;
+  --blue-md: #DBEAFE;
+  --amber: #D97706;
+  --amber-lt: #FFFBEB;
+  --amber-md: #FEF3C7;
+  --green: #059669;
+  --green-lt: #ECFDF5;
+  --red: #DC2626;
+  --red-lt: #FEF2F2;
+  --orange: #EA580C;
+  --orange-lt: #FFF7ED;
+  --r-sm: 14px;
+  --r-md: 18px;
+  --r-lg: 24px;
+  --sh-sm: 0 1px 4px rgba(17,24,39,.06), 0 2px 8px rgba(17,24,39,.04);
+  --sh-md: 0 2px 8px rgba(17,24,39,.07), 0 6px 20px rgba(17,24,39,.05);
+  --sh-lg: 0 4px 16px rgba(17,24,39,.08), 0 12px 36px rgba(17,24,39,.06);
+  --sidebar: 240px;
+  --sidebar-collapsed: 64px;
+}
+
+[data-theme="dark"] {
+  --bg: #0D1117;
+  --bg1: #131920;
+  --bg2: #1C2633;
+  --card: #182030;
+  --border: #243040;
+  --text: #F0F6FF;
+  --text2: #8BA3C0;
+  --text3: #4A6080;
+  --blue: #3B82F6;
+  --blue2: #60A5FA;
+  --blue-lt: #0F1E35;
+  --blue-md: #172840;
+  --amber: #F59E0B;
+  --amber-lt: #1A1400;
+  --amber-md: #2A2000;
+  --green: #10B981;
+  --green-lt: #0A1F14;
+  --red: #EF4444;
+  --red-lt: #200A0A;
+  --orange: #F97316;
+  --orange-lt: #1A0E00;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background .3s, color .3s;
+}
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar: 200px;
+  }
+  .home-stats, .modules-grid {
+    gap: 12px;
+  }
+}
+
+/* Mobile (доор 768px) */
+@media (max-width: 768px) {
+  .home-container {
+    padding: 16px !important;
+  }
+  .home-stats {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+  .modules-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .week-days {
+    gap: 4px;
+  }
+  .week-day-cell {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .modules-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
