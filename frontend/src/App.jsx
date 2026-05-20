@@ -27,7 +27,6 @@ function AppContent() {
   const toastTimer = useRef(null);
   const { profile, modules, loading, error, refetch } = useUserData();
 
-  // ✅ Темийг html дээр тохируулах
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', settings.theme);
   }, [settings.theme]);
@@ -46,11 +45,13 @@ function AppContent() {
   const goTo = useCallback((id, params = {}) => {
     setPrev(cur);
     setCur(id);
-    if (params.lessonId) window.sessionStorage.setItem('currentLessonId', params.lessonId);
+    if (params.lessonId) {
+      window.sessionStorage.setItem('currentLessonId', params.lessonId);
+    }
     window.scrollTo(0, 0);
   }, [cur]);
 
-  const handleLogin = async () => {
+  const handleLogin = async (user) => {
     setLoggedIn(true);
     await refetch();
   };
@@ -72,11 +73,10 @@ function AppContent() {
   }
 
   const sidebarWidth = settings.sidebarCollapsed ? 'var(--sidebar-collapsed)' : 'var(--sidebar)';
-  const dataForHome = { profile, modules, error };
   const lessonIdFromStorage = window.sessionStorage.getItem('currentLessonId');
 
   const screens = {
-    home: <HomeScreen t={t} goTo={goTo} data={dataForHome} onRetry={refetch} />,
+    home: <HomeScreen t={t} goTo={goTo} onRetry={refetch} />,
     lessons: <LessonsScreen t={t} goTo={goTo} showToast={showToast} />,
     detail: <DetailScreen t={t} goBack={() => goTo(prev || 'lessons')} lessonId={lessonIdFromStorage} />,
     test: <TestScreen t={t} showToast={showToast} />,
@@ -90,7 +90,7 @@ function AppContent() {
       <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
         <Sidebar cur={cur} goTo={goTo} settings={settings} updateSettings={updateSettings} t={t} onLogout={logout} />
         <main style={{ marginLeft: sidebarWidth, flex: 1, minHeight: '100vh', transition: 'margin-left .28s cubic-bezier(.4,0,.2,1)', overflowX: 'hidden' }}>
-          {loading && cur === 'home' ? <div style={{ padding: 28, textAlign: 'center', color: 'var(--text)' }}>🔄 Ачааллаж байна...</div> : screens[cur] || screens.home}
+          {loading && cur === 'home' ? <div style={{ padding: 28, textAlign: 'center' }}>🔄 Ачааллаж байна...</div> : screens[cur] || screens.home}
         </main>
       </div>
       <PayModal open={payOpen} onClose={() => setPayOpen(false)} t={t} onConfirm={confirmPay} />

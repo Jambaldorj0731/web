@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Icon } from '../common/Icon';
+import { useUserData } from '../../contexts/UserDataContext';
 
 export const DetailScreen = ({ t, goBack, lessonId }) => {
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
   const [completing, setCompleting] = useState(false);
+  const { refetch } = useUserData(); // ✅ шинэчлэх функц
 
   useEffect(() => {
     const fetchLesson = async () => {
@@ -25,7 +27,8 @@ export const DetailScreen = ({ t, goBack, lessonId }) => {
     setCompleting(true);
     try {
       await api.post(`/lessons/complete/${lessonId}`);
-      goBack();
+      await refetch();        // ✅ Хэрэглэгчийн өгөгдлийг шинэчлэх
+      goBack();               // ✅ Буцах
     } catch (err) {
       console.error(err);
     } finally {
@@ -33,8 +36,8 @@ export const DetailScreen = ({ t, goBack, lessonId }) => {
     }
   };
 
-  if (loading) return <div style={{ padding: 28, textAlign: 'center', color: 'var(--text)' }}>🔄 Ачааллаж байна...</div>;
-  if (!lesson) return <div style={{ padding: 28, textAlign: 'center', color: 'var(--red)' }}>Хичээл олдсонгүй</div>;
+  if (loading) return <div style={{ padding: 28, textAlign: 'center' }}>🔄 Ачааллаж байна...</div>;
+  if (!lesson) return <div style={{ padding: 28, textAlign: 'center' }}>Хичээл олдсонгүй</div>;
 
   return (
     <div style={{ padding: '28px 32px', maxWidth: 900, margin: '0 auto' }}>
@@ -42,7 +45,6 @@ export const DetailScreen = ({ t, goBack, lessonId }) => {
         <Icon name="arrow-left" size={16} /> {t('lesson.back')}
       </div>
 
-      {/* Header карт */}
       <div style={{ background: 'linear-gradient(135deg, var(--blue), #1E40AF)', borderRadius: 24, padding: '32px 28px', marginBottom: 28, color: 'white' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
           <div style={{ width: 70, height: 70, borderRadius: 20, background: 'rgba(255,255,255,.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -55,7 +57,6 @@ export const DetailScreen = ({ t, goBack, lessonId }) => {
         </div>
       </div>
 
-      {/* Метроном (XP, цаг) */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 28, flexWrap: 'wrap' }}>
         <span style={{ background: 'var(--blue-lt)', color: 'var(--blue)', padding: '6px 14px', borderRadius: 40, fontSize: 13, fontWeight: 600 }}>
           <Icon name="clock" size={14} /> {lesson.durationMin} мин
@@ -65,7 +66,6 @@ export const DetailScreen = ({ t, goBack, lessonId }) => {
         </span>
       </div>
 
-      {/* Гол агуулга (HTML + видео) */}
       <div style={{ background: 'var(--card)', borderRadius: 24, padding: '28px', border: '1px solid var(--border)', marginBottom: 28 }}>
         <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, fontSize: 18, color: 'var(--text)' }}>
           <Icon name="book-open" size={20} style={{ color: 'var(--blue)' }} /> Хичээлийн агуулга
@@ -76,7 +76,6 @@ export const DetailScreen = ({ t, goBack, lessonId }) => {
         />
       </div>
 
-      {/* Видео тусгай талбар (хэрэв lesson.videoUrl байвал) */}
       {lesson.videoUrl && (
         <div style={{ marginBottom: 28, borderRadius: 16, overflow: 'hidden', border: '1px solid var(--border)' }}>
           <iframe
@@ -91,11 +90,10 @@ export const DetailScreen = ({ t, goBack, lessonId }) => {
         </div>
       )}
 
-      {/* Дуусгах товч */}
       <button
         onClick={completeLesson}
         disabled={completing}
-        style={{ width: '100%', padding: '16px', background: 'linear-gradient(135deg, var(--blue), #1E40AF)', border: 'none', borderRadius: 20, color: 'white', fontSize: 16, fontWeight: 700, cursor: completing ? 'not-allowed' : 'pointer', opacity: completing ? 0.6 : 1, transition: 'transform .2s' }}
+        style={{ width: '100%', padding: '16px', background: 'linear-gradient(135deg, var(--blue), #1E40AF)', border: 'none', borderRadius: 20, color: 'white', fontSize: 16, fontWeight: 700, cursor: completing ? 'not-allowed' : 'pointer', opacity: completing ? 0.6 : 1 }}
         onMouseEnter={e => { if (!completing) e.currentTarget.style.transform = 'scale(1.02)'; }}
         onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
       >

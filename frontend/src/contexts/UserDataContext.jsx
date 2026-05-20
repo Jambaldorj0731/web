@@ -17,19 +17,19 @@ export const UserDataProvider = ({ children }) => {
     }
     try {
       setLoading(true);
-      setError(null);
       const [profileRes, modulesRes] = await Promise.all([
         api.get('/user/profile'),
         api.get('/user/modules')
       ]);
       setProfile(profileRes.data);
       setModules(modulesRes.data);
+      setError(null);
     } catch (err) {
-      console.error('Fetch user data error:', err);
-      setError(err.response?.data?.error || 'Хэрэглэгчийн мэдээлэл ачааллахад алдаа гарлаа');
+      console.error('Fetch error:', err);
+      setError(err.response?.data?.error || 'Мэдээлэл ачааллахад алдаа');
       if (err.response?.status === 401) {
         localStorage.removeItem('token');
-        window.location.reload();
+        window.location = '/';
       }
     } finally {
       setLoading(false);
