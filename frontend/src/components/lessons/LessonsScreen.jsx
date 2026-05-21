@@ -2,11 +2,19 @@ import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Icon } from '../common/Icon';
 
-export const LessonsScreen = ({ t, goTo, showToast }) => {
+export const LessonsScreen = ({ t, goTo, showToast, isVip, openPay }) => {
   const [modules, setModules] = useState([]);
   const [selectedModule, setSelectedModule] = useState(null);
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isNarrow, setIsNarrow] = useState(false);
+
+  useEffect(() => {
+    const checkViewport = () => setIsNarrow(window.innerWidth <= 900);
+    checkViewport();
+    window.addEventListener('resize', checkViewport);
+    return () => window.removeEventListener('resize', checkViewport);
+  }, []);
 
   // Fetch all modules
   useEffect(() => {
@@ -47,7 +55,8 @@ export const LessonsScreen = ({ t, goTo, showToast }) => {
   const nodeBorder = {
     done: 'none',
     active: '2px solid var(--blue)',
-    locked: '2px solid var(--border)'
+    locked: '2px solid var(--border)',
+    vip_locked: '2px solid rgba(245,158,11,.55)'
   };
 
   if (loading) {
@@ -59,7 +68,7 @@ export const LessonsScreen = ({ t, goTo, showToast }) => {
   }
 
   return (
-    <div style={{ padding: '28px 32px' }}>
+    <div style={{ padding: isNarrow ? '18px 16px' : '28px 32px', maxWidth: 1280, margin: '0 auto' }}>
       <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 24 }}>{t('lessons.pageTitle')}</div>
 
       {/* Module tabs */}
@@ -97,7 +106,7 @@ export const LessonsScreen = ({ t, goTo, showToast }) => {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : 'minmax(0, 1fr) 320px', gap: 24 }}>
         {/* Lessons list */}
         <div>
           {/* Island card */}
@@ -120,7 +129,10 @@ export const LessonsScreen = ({ t, goTo, showToast }) => {
               <div key={lesson._id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                 <div
                   onClick={() => {
-                    if (lesson.status !== 'locked') {
+                    if (lesson.status === 'vip_locked') {
+                      showToast('Энэ хичээл VIP эрх шаардлагатай', 'err');
+                      openPay();
+                    } else if (lesson.status !== 'locked') {
                       goTo('detail', { lessonId: lesson._id });
                     } else {
                       showToast('Өмнөх хичээлийг дуусгана уу', 'err');
@@ -140,7 +152,7 @@ export const LessonsScreen = ({ t, goTo, showToast }) => {
                     opacity: lesson.status === 'locked' ? 0.65 : 1,
                     transition: 'transform .15s, box-shadow .15s',
                     boxShadow: 'var(--sh-sm)',
-                    alignSelf: idx % 2 === 0 ? 'flex-start' : 'flex-end'
+                    alignSelf: isNarrow ? 'center' : idx % 2 === 0 ? 'flex-start' : 'flex-end'
                   }}
                   onMouseEnter={e => {
                     if (lesson.status !== 'locked') {
@@ -158,21 +170,24 @@ export const LessonsScreen = ({ t, goTo, showToast }) => {
                       width: 44,
                       height: 44,
                       borderRadius: '50%',
-                      background: lesson.status === 'done' ? 'var(--green)' : lesson.status === 'active' ? 'var(--blue-lt)' : 'var(--bg2)',
+                      background: lesson.status === 'done' ? 'var(--green)' : lesson.status === 'active' ? 'var(--blue-lt)' : lesson.status === 'vip_locked' ? 'rgba(245,158,11,.12)' : 'var(--bg2)',
                       border: nodeBorder[lesson.status],
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
-                      color: lesson.status === 'done' ? 'white' : lesson.status === 'active' ? 'var(--blue)' : 'var(--text3)',
+                      color: lesson.status === 'done' ? 'white' : lesson.status === 'active' ? 'var(--blue)' : lesson.status === 'vip_locked' ? 'var(--amber)' : 'var(--text3)',
                       fontWeight: 700,
                       fontSize: 16
                     }}
                   >
-                    {lesson.status === 'done' ? '✓' : <Icon name={selectedModule?.icon || 'dumbbell'} size={18} />}
+                    {lesson.status === 'done' ? '✓' : lesson.status === 'vip_locked' ? <Icon name="lock" size={18} /> : <Icon name={selectedModule?.icon || 'dumbbell'} size={18} />}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{lesson.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                      <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{lesson.name}</span>
+                      {lesson.isPremium && <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--amber)', background: 'rgba(245,158,11,.12)', border: '1px solid rgba(245,158,11,.28)', borderRadius: 999, padding: '2px 7px' }}>VIP</span>}
+                    </div>
                     <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 2 }}>{lesson.meta}</div>
                     <div style={{ display: 'flex', gap: 2, marginTop: 4 }}>
                       {lesson.stars
@@ -190,7 +205,7 @@ export const LessonsScreen = ({ t, goTo, showToast }) => {
         </div>
 
         {/* Sidebar info panel */}
-        <div style={{ position: 'sticky', top: 28, height: 'fit-content' }}>
+        <div style={{ position: isNarrow ? 'static' : 'sticky', top: 28, height: 'fit-content' }}>
           <div style={{ background: 'var(--card)', borderRadius: 20, overflow: 'hidden', border: '1px solid var(--border)', boxShadow: 'var(--sh-lg)' }}>
             <div style={{ background: 'linear-gradient(135deg, var(--blue), #1E40AF)', padding: '28px 22px', display: 'flex', alignItems: 'center', gap: 14 }}>
               <div style={{ width: 60, height: 60, borderRadius: 16, background: 'rgba(255,255,255,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>

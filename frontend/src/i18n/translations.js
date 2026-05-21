@@ -1,11 +1,15 @@
 export const I18N = {
   mn: {
+    // Navigation
     "nav.home": "Нүүр",
-    "nav.lessons": "Хичээл",
+    "nav.lessons": "Сургалт",
     "nav.test": "Шалгалт",
-    "nav.legends": "Арга хэмжээ",
+    "nav.legends": "Домогт Уулзалт",
     "nav.rank": "Алдрын самбар",
     "nav.profile": "Профайл",
+    "nav.admin": "Админ панель",
+
+    // Settings
     "settings.darkMode": "Харанхуй горим",
     "settings.darkOn": "Идэвхтэй",
     "settings.darkOff": "Унтраалттай",
@@ -15,6 +19,8 @@ export const I18N = {
     "settings.language": "Хэл",
     "settings.langMn": "Монгол",
     "settings.langEn": "English",
+
+    // Login / Register
     "login.headline": "Монгол уламжлалаа эргэн нээцгээе",
     "login.sub": "Нэвтэрч суралцалтаа эхлүүлнэ үү",
     "login.phoneLabel": "Утасны дугаар",
@@ -24,33 +30,47 @@ export const I18N = {
     "login.submit": "Нэвтрэх →",
     "login.altPrefix": "Шинэ хэрэглэгч үү?",
     "login.register": "Бүртгүүлэх",
+
+    // Greetings
     "greet.morning": "Өглөөний мэнд",
     "greet.afternoon": "Өдрийн мэнд",
     "greet.evening": "Оройн мэнд",
+
+    // Home
     "home.dayWord": "өдөр",
-    "home.modulesTitle": "Сурах модуль",
+    "home.modulesTitle": "Сургалт",
     "home.allLink": "Бүгд →",
     "home.statDays": "Өдөр",
-    "home.statRank": "Түвшин",
+    "home.statRank": "Байрласан түвшин",
     "home.statBadges": "Тэмдэг",
     "home.rankTag": "Таны түвшин",
     "home.weekTitle": "Энэ долоо хоног",
     "home.weekStreak": "өдрийн дараалал",
-    "lessons.pageTitle": "Сурах орой",
+
+    // Lessons
+    "lessons.pageTitle": "Сургалт",
+    "lesson.back": "← Буцах",
+
+    // Rank
     "rank.pageTitle": "Алдрын самбар",
     "rank.pageSub": "Долоо хоногийн шилдгүүд",
     "rank.myRankTag": "Миний байр",
     "rank.topThree": "ТОП 3",
+
+    // Profile
     "profile.title": "Профайл",
     "profile.badgesTitle": "Амжилтын тэмдэгнүүд",
     "profile.settingsTitle": "Тохиргоо",
     "profile.legendOpen": "1 нээлттэй",
     "profile.vip": "VIP Pro авах",
     "profile.logout": "Гарах",
-    "lesson.back": "← Буцах",
+
+    // Quiz
     "quiz.check": "Хариулт шалгах",
     "quiz.next": "Дараагийн асуулт →",
     "quiz.options": "А,Б,В,Г",
+
+    // Toast
     "toast.pickAnswer": "Хариулт сонгоно уу!",
     "toast.correctXp": "Зөв! +20 XP",
     "toast.wrongAnswer": "Буруу. Зөв хариулт: Б",
@@ -58,6 +78,10 @@ export const I18N = {
     "toast.notifyOff": "Мэдэгдэл унтраалттай",
     "toast.languageSaved": "Хэл солигдлоо",
     "toast.loggedOut": "Системээс гарлаа",
+    "toast.legendVipBooking": "VIP уулзалтын цаг захиалга илгээгдлээ (демо)",
+    "toast.vipIslandOpen": "Уламжлалт бичгийн арал нээгдлээ!",
+
+    // Payment
     "pay.title": "Бүх премиум агуулга",
     "pay.lead": "Бичиг соёл, гэрийн гүнзгий хичээл, тусгай шалгалтууд нээгдэнэ.",
     "pay.planMonth": "Сарын",
@@ -79,16 +103,19 @@ export const I18N = {
     "pay.vipTag": "VIP",
     "pay.legendOpen": "Нээлттэй",
     "pay.legendNeedVip": "VIP шаардлагатай",
-    "toast.legendVipBooking": "VIP уулзалтын цаг захиалга илгээгдлээ (демо)",
-    "toast.vipIslandOpen": "Уламжлалт бичгийн арал нээгдлээ!"
+    "nav.admin" : "Админ панель"
   },
   en: {
+    // Navigation
     "nav.home": "Home",
-    "nav.lessons": "Learning summit",
+    "nav.lessons": "Training",
     "nav.test": "Quiz",
     "nav.legends": "Meet legends",
     "nav.rank": "Honor board",
     "nav.profile": "Profile",
+    "nav.admin": "Admin Panel",
+
+    // Settings
     "settings.darkMode": "Dark mode",
     "settings.darkOn": "On",
     "settings.darkOff": "Off",
@@ -98,6 +125,8 @@ export const I18N = {
     "settings.language": "Language",
     "settings.langMn": "Монгол",
     "settings.langEn": "English",
+
+    // Login / Register
     "login.headline": "Rediscover Mongolian heritage",
     "login.sub": "Sign in to start learning",
     "login.phoneLabel": "Phone number",
@@ -107,11 +136,15 @@ export const I18N = {
     "login.submit": "Sign in →",
     "login.altPrefix": "New here?",
     "login.register": "Register",
+
+    // Greetings
     "greet.morning": "Good morning",
     "greet.afternoon": "Good afternoon",
     "greet.evening": "Good evening",
+
+    // Home
     "home.dayWord": "days",
-    "home.modulesTitle": "Learning modules",
+    "home.modulesTitle": "Training",
     "home.allLink": "See all →",
     "home.statDays": "Days",
     "home.statRank": "Leaderboard rank",
@@ -119,21 +152,31 @@ export const I18N = {
     "home.rankTag": "Your rank",
     "home.weekTitle": "This week",
     "home.weekStreak": "day streak",
-    "lessons.pageTitle": "Learning summit",
+
+    // Lessons
+    "lessons.pageTitle": "Training",
+    "lesson.back": "← Back",
+
+    // Rank
     "rank.pageTitle": "Honor board",
     "rank.pageSub": "Weekly leaders",
     "rank.myRankTag": "My placement",
     "rank.topThree": "TOP 3",
+
+    // Profile
     "profile.title": "Profile",
     "profile.badgesTitle": "Achievement badges",
     "profile.settingsTitle": "Settings",
     "profile.legendOpen": "1 open",
     "profile.vip": "Get VIP Pro",
     "profile.logout": "Log out",
-    "lesson.back": "← Back",
+
+    // Quiz
     "quiz.check": "Check answer",
     "quiz.next": "Next question →",
     "quiz.options": "A,B,C,D",
+
+    // Toast
     "toast.pickAnswer": "Pick an answer first!",
     "toast.correctXp": "Correct! +20 XP",
     "toast.wrongAnswer": "Wrong. Correct: B",
@@ -141,6 +184,10 @@ export const I18N = {
     "toast.notifyOff": "Notifications off",
     "toast.languageSaved": "Language updated",
     "toast.loggedOut": "Signed out",
+    "toast.legendVipBooking": "VIP meeting request sent (demo)",
+    "toast.vipIslandOpen": "Script heritage island unlocked!",
+
+    // Payment
     "pay.title": "Unlock all premium lessons",
     "pay.lead": "Traditional script, deeper ger chapter, and exclusive quizzes.",
     "pay.planMonth": "Monthly",
@@ -162,7 +209,6 @@ export const I18N = {
     "pay.vipTag": "VIP",
     "pay.legendOpen": "Open",
     "pay.legendNeedVip": "VIP required",
-    "toast.legendVipBooking": "VIP meeting request sent (demo)",
-    "toast.vipIslandOpen": "Script heritage island unlocked!"
+    "nav.admin" : "admin panel"
   }
 };

@@ -9,12 +9,29 @@ const NAV_ITEMS = [
   { id: 'profile', icon: 'circle-user-round', labelKey: 'nav.profile' }
 ];
 
-export const Sidebar = ({ cur, goTo, settings, updateSettings, t, onLogout }) => {
+export const Sidebar = ({ cur, goTo, settings, updateSettings, t, onLogout, isAdmin = false, isMobileLayout = false }) => {
   const collapsed = settings.sidebarCollapsed;
   const sidebarWidth = collapsed ? 'var(--sidebar-collapsed)' : 'var(--sidebar)';
 
+  // Админ бол нэмэлт цэс
+  const navItems = isAdmin
+    ? [...NAV_ITEMS, { id: 'admin', icon: 'shield', labelKey: 'nav.admin' }]
+    : NAV_ITEMS;
+
   return (
-    <nav style={{
+    <nav style={isMobileLayout ? {
+      position: 'fixed',
+      left: 10,
+      right: 10,
+      bottom: 10,
+      zIndex: 100,
+      background: 'rgba(24,32,48,.94)',
+      border: '1px solid var(--border)',
+      borderRadius: 18,
+      boxShadow: 'var(--sh-lg)',
+      backdropFilter: 'blur(12px)',
+      padding: 8
+    } : {
       width: sidebarWidth,
       flexShrink: 0,
       background: 'var(--card)',
@@ -29,7 +46,8 @@ export const Sidebar = ({ cur, goTo, settings, updateSettings, t, onLogout }) =>
       transition: 'width .28s cubic-bezier(.4,0,.2,1)',
       overflow: 'hidden'
     }}>
-      <div onClick={() => updateSettings({ sidebarCollapsed: !collapsed })}
+      {/* Toggle button */}
+      {!isMobileLayout && <div onClick={() => updateSettings({ sidebarCollapsed: !collapsed })}
         style={{
           position: 'absolute', top: 20, right: -13, width: 26, height: 26,
           background: 'var(--card)', border: '1.5px solid var(--border)', borderRadius: '50%',
@@ -37,9 +55,10 @@ export const Sidebar = ({ cur, goTo, settings, updateSettings, t, onLogout }) =>
           fontSize: 11, color: 'var(--text3)', boxShadow: 'var(--sh-sm)', zIndex: 101,
           transition: 'background .2s,color .2s,transform .28s',
           transform: collapsed ? 'rotate(180deg)' : 'none', userSelect: 'none'
-        }}>‹</div>
+        }}>‹</div>}
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '20px 13px 18px', borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap', overflow: 'hidden', minHeight: 68 }}>
+      {/* Brand */}
+      {!isMobileLayout && <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '20px 13px 18px', borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap', overflow: 'hidden', minHeight: 68 }}>
         <div style={{ width: 38, height: 38, borderRadius: 12, background: 'linear-gradient(135deg,#2563EB,#1E40AF)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'white' }}>
           <Icon name="compass" size={18} />
         </div>
@@ -47,29 +66,31 @@ export const Sidebar = ({ cur, goTo, settings, updateSettings, t, onLogout }) =>
           <div style={{ fontFamily: "'Noto Serif',serif", fontSize: 14, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>Монгол Ондоошил</div>
           <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--text3)' }}>Mongolian Identity</div>
         </div>}
-      </div>
+      </div>}
 
-      <div style={{ flex: 1, padding: '16px 8px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-        {NAV_ITEMS.map(item => (
+      {/* Navigation items */}
+      <div style={isMobileLayout ? { display: 'grid', gridTemplateColumns: `repeat(${Math.min(navItems.length, 6)}, minmax(0, 1fr))`, gap: 4 } : { flex: 1, padding: '16px 8px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {navItems.map(item => (
           <div key={item.id} onClick={() => goTo(item.id)}
             style={{
-              display: 'flex', alignItems: 'center', gap: 12,
-              padding: collapsed ? '11px 0' : '11px 12px', borderRadius: 12, cursor: 'pointer', transition: 'all .2s',
+              display: isMobileLayout && item.id === 'admin' ? 'none' : 'flex', alignItems: 'center', gap: 12,
+              padding: isMobileLayout ? '9px 4px' : collapsed ? '11px 0' : '11px 12px', borderRadius: 12, cursor: 'pointer', transition: 'all .2s',
               color: cur === item.id ? 'var(--blue)' : 'var(--text2)',
-              background: cur === item.id ? 'var(--blue-lt)' : 'transparent', fontWeight: 600, fontSize: 13,
-              whiteSpace: 'nowrap', justifyContent: collapsed ? 'center' : 'flex-start'
+              background: cur === item.id ? 'var(--blue-lt)' : 'transparent', fontWeight: 600, fontSize: isMobileLayout ? 10 : 13,
+              whiteSpace: 'nowrap', justifyContent: 'center', flexDirection: isMobileLayout ? 'column' : 'row', minWidth: 0
             }}
             onMouseEnter={e => { if (cur !== item.id) { e.currentTarget.style.background = 'var(--bg1)'; e.currentTarget.style.color = 'var(--text)'; } }}
             onMouseLeave={e => { if (cur !== item.id) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text2)'; } }}>
             <span style={{ width: 24, textAlign: 'center', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name={item.icon} size={18} />
             </span>
-            {!collapsed && <span>{t(item.labelKey)}</span>}
+            {(!collapsed || isMobileLayout) && <span style={isMobileLayout ? { overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' } : undefined}>{t(item.labelKey)}</span>}
           </div>
         ))}
       </div>
 
-      <div style={{ padding: '12px 8px', borderTop: '1px solid var(--border)' }}>
+      {/* Footer */}
+      {!isMobileLayout && <div style={{ padding: '12px 8px', borderTop: '1px solid var(--border)' }}>
         <div onClick={() => updateSettings({ theme: settings.theme === 'dark' ? 'light' : 'dark' })}
           style={{ display: 'flex', alignItems: 'center', gap: 10, padding: collapsed ? '10px 0' : '10px 12px', borderRadius: 12, cursor: 'pointer', justifyContent: collapsed ? 'center' : 'flex-start', marginBottom: 4 }}
           onMouseEnter={e => e.currentTarget.style.background = 'var(--bg1)'}
@@ -95,7 +116,7 @@ export const Sidebar = ({ cur, goTo, settings, updateSettings, t, onLogout }) =>
             <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text3)' }}>Дэлгэрэнгүй</div>
           </div>}
         </div>
-      </div>
+      </div>}
     </nav>
   );
 };

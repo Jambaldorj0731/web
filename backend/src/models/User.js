@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   fullName: { type: String, default: '' },
   shortName: { type: String, default: '' },
+  avatarUrl: { type: String, default: '' },
   rankName: { type: String, default: 'Сумын Заан' },
   rankPosition: { type: Number, default: 0 },
   totalXp: { type: Number, default: 0 },
@@ -27,4 +28,5 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-export default mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+export default User;

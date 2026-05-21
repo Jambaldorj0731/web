@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import { getRankProgress } from '../utils/ranks.js';
 
 export const getLeaderboard = async (req, res) => {
   try {
@@ -40,6 +41,7 @@ export const getLeaderboard = async (req, res) => {
 
     const usersWithRank = users.map((user, idx) => ({
       ...user.toObject(),
+      rankName: getRankProgress(user.totalXp).currentRank,
       rank: skip + idx + 1
     }));
 

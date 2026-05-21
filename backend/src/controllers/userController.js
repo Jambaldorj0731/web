@@ -2,28 +2,32 @@ import User from '../models/User.js';
 import Progress from '../models/Progress.js';
 import Lesson from '../models/Lesson.js';
 import Module from '../models/Module.js';
+import { getRankProgress } from '../utils/ranks.js';
 
 export const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-__v');
-    const xpForNextRank = 2000;
-    const xpToNext = Math.max(0, xpForNextRank - user.totalXp);
-    const nextRank = user.totalXp >= 2000 ? 'Улсын Аварга' : 'Аймгийн Арслан';
+    const { currentRank, nextRank, xpToNext } = getRankProgress(user.totalXp);
+    if (user.rankName !== currentRank) {
+      user.rankName = currentRank;
+      await user.save();
+    }
     res.json({
       id: user._id,
       full_name: user.fullName,
       short_name: user.shortName,
-      rank_name: user.rankName,
+      avatar_url: user.avatarUrl,
+      rank_name: currentRank,
       rank_position: user.rankPosition,
       xp: user.totalXp,
       streak_days: user.streakDays,
       badge_count: user.badgeCount,
       next_rank: nextRank,
       xp_to_next: xpToNext,
-      phone: user.phone
+      phone: user.phone,
+      role: user.role            // ✅ ЭНЭ МӨР ЗААВАЛ
     });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -52,7 +56,44 @@ export const getUserModules = async (req, res) => {
     }));
     res.json(modulesWithProgress);
   } catch (err) {
-    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { fullName, shortName, avatarUrl } = req.body;
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ error: 'Хэрэглэгч олдсонгүй' });
+    if (fullName !== undefined) user.fullName = fullName;
+    if (shortName !== undefined) user.shortName = shortName;
+    if (avatarUrl !== undefined) {
+      if (avatarUrl && !String(avatarUrl).startsWith('data:image/')) {
+        return res.status(400).json({ error: 'Зөвхөн зураг файл оруулна уу' });
+      }
+      if (avatarUrl && String(avatarUrl).length > 14 * 1024 * 1024) {
+        return res.status(400).json({ error: 'Зураг хэт том байна. 10MB-аас бага зураг оруулна уу' });
+      }
+      user.avatarUrl = avatarUrl;
+    }
+    await user.save();
+    res.json({ message: 'Профайл амжилттай шинэчлэгдлээ', user: { fullName: user.fullName, shortName: user.shortName, avatarUrl: user.avatarUrl } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ error: 'Хэрэглэгч олдсонгүй' });
+    const isMatch = await user.comparePassword(oldPassword);
+    if (!isMatch) return res.status(400).json({ error: 'Хуучин нууц үг буруу байна' });
+    user.password = newPassword;
+    await user.save();
+    res.json({ message: 'Нууц үг амжилттай солигдлоо' });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };

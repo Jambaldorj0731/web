@@ -11,6 +11,7 @@ const lessonSchema = new mongoose.Schema({
   order: { type: Number, default: 0 },
   requiredLessonId: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson', default: null },
   starsMax: { type: Number, default: 3 },
+  isPremium: { type: Boolean, default: false },
   isActive: { type: Boolean, default: true }
 });
 

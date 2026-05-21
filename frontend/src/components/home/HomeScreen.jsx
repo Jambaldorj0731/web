@@ -5,12 +5,16 @@ import { useUserData } from '../../contexts/UserDataContext';
 export const HomeScreen = ({ t, goTo, onRetry }) => {
   const { profile, modules, loading, error } = useUserData();
   const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 600);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    const checkViewport = () => {
+      setIsMobile(window.innerWidth <= 640);
+      setIsTablet(window.innerWidth <= 1024);
+    };
+    checkViewport();
+    window.addEventListener('resize', checkViewport);
+    return () => window.removeEventListener('resize', checkViewport);
   }, []);
 
   if (loading) return <div style={{ padding: 28, textAlign: 'center' }}>🔄 Ачааллаж байна...</div>;
@@ -24,19 +28,20 @@ export const HomeScreen = ({ t, goTo, onRetry }) => {
   }
   if (!profile) return <div style={{ padding: 28, textAlign: 'center' }}>Мэдээлэл олдсонгүй</div>;
 
-  const xpPct = Math.round((profile.xp / (profile.xp + profile.xp_to_next)) * 100);
+  const xpTotal = profile.xp + profile.xp_to_next;
+  const xpPct = xpTotal > 0 ? Math.min(100, Math.round((profile.xp / xpTotal) * 100)) : 100;
   const h = new Date().getHours();
   const greetKey = h >= 5 && h < 12 ? 'greet.morning' : h >= 12 && h < 18 ? 'greet.afternoon' : 'greet.evening';
   const modColors = { m1: '#2563EB', m2: '#D97706', m3: '#059669', m4: '#7c3aed', m5: '#8B5CF6' };
   const displayName = profile.full_name || profile.short_name || 'Хэрэглэгч';
 
   return (
-    <div style={{ padding: '28px 32px', maxWidth: '100%', width: '100%', boxSizing: 'border-box' }}>
+    <div style={{ padding: isMobile ? '18px 16px' : isTablet ? '24px' : '28px 32px', maxWidth: 1280, width: '100%', boxSizing: 'border-box', margin: '0 auto' }}>
       {/* Header */}
       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'space-between', marginBottom: 24, gap: 16 }}>
         <div>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text3)' }}>{t(greetKey)}</div>
-          <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--text)' }}>{displayName}</div>
+          <div style={{ fontSize: isMobile ? 30 : 28, fontWeight: 800, color: 'var(--text)', lineHeight: 1.08, wordBreak: 'break-word' }}>{displayName}</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--orange-lt)', borderRadius: 20, padding: '8px 14px' }}>
           <Icon name="flame" size={18} style={{ color: 'var(--orange)' }} />
@@ -46,7 +51,7 @@ export const HomeScreen = ({ t, goTo, onRetry }) => {
       </div>
 
       {/* XP карт */}
-      <div style={{ background: 'var(--card)', borderRadius: 20, padding: '18px 22px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 14, border: '1px solid var(--border)' }}>
+      <div style={{ background: 'var(--card)', borderRadius: 20, padding: isMobile ? '16px' : '18px 22px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 14, border: '1px solid var(--border)' }}>
         <div style={{ width: 42, height: 42, borderRadius: 12, background: 'var(--amber-lt)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--amber)' }}>
           <Icon name="zap" size={20} />
         </div>
@@ -62,7 +67,7 @@ export const HomeScreen = ({ t, goTo, onRetry }) => {
       </div>
 
       {/* Статистик */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, minmax(0, 1fr))', gap: 12, marginBottom: 24 }}>
         {[
           { icon: 'flame', val: profile.streak_days, lbl: t('home.statDays'), color: 'var(--orange)', bg: 'var(--orange-lt)' },
           { icon: 'bar-chart-3', val: `#${profile.rank_position}`, lbl: t('home.statRank'), color: 'var(--blue)', bg: 'var(--blue-lt)' },
@@ -79,7 +84,7 @@ export const HomeScreen = ({ t, goTo, onRetry }) => {
       </div>
 
       {/* Ранк карт */}
-      <div onClick={() => goTo('rank')} style={{ background: 'linear-gradient(135deg,var(--blue),#1E40AF)', borderRadius: 20, padding: '18px 22px', marginBottom: 28, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'space-between', flexWrap: 'wrap' }}>
+      <div onClick={() => goTo('rank')} style={{ background: 'linear-gradient(135deg,var(--blue),#1E40AF)', borderRadius: 20, padding: isMobile ? '18px' : '18px 22px', marginBottom: 28, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'space-between', flexWrap: 'wrap' }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: 'rgba(255,255,255,.6)' }}>{t('home.rankTag')}</div>
           <div style={{ fontSize: 20, fontWeight: 800, color: 'white' }}>{profile.rank_name}</div>
@@ -94,7 +99,7 @@ export const HomeScreen = ({ t, goTo, onRetry }) => {
         <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>{t('home.modulesTitle')}</span>
         <span onClick={() => goTo('lessons')} style={{ fontSize: 13, fontWeight: 600, color: 'var(--blue)', cursor: 'pointer' }}>{t('home.allLink')}</span>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))', gap: 12 }}>
         {modules.map(m => (
           <div key={m.id} onClick={() => goTo('lessons')} style={{ background: 'var(--card)', borderRadius: 18, padding: '18px 16px', cursor: 'pointer', transition: 'transform .2s', border: '1px solid var(--border)' }}>
             <div style={{ color: modColors[m.css_class] || 'var(--blue)', marginBottom: 10 }}><Icon name={m.icon} size={24} /></div>

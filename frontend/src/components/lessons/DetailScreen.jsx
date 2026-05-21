@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Icon } from '../common/Icon';
 import { useUserData } from '../../contexts/UserDataContext';
+import DOMPurify from 'dompurify';
 
-export const DetailScreen = ({ t, goBack, lessonId }) => {
+export const DetailScreen = ({ t, goBack, lessonId, openPay }) => {
   const [lesson, setLesson] = useState(null);
+  const [vipBlocked, setVipBlocked] = useState(false);
   const [loading, setLoading] = useState(true);
   const [completing, setCompleting] = useState(false);
-  const { refetch } = useUserData(); // ✅ шинэчлэх функц
+  const { refetch } = useUserData();
 
   useEffect(() => {
     const fetchLesson = async () => {
@@ -15,6 +17,7 @@ export const DetailScreen = ({ t, goBack, lessonId }) => {
         const res = await api.get(`/lessons/${lessonId}`);
         setLesson(res.data);
       } catch (err) {
+        if (err.response?.status === 403) setVipBlocked(true);
         console.error(err);
       } finally {
         setLoading(false);
@@ -27,9 +30,10 @@ export const DetailScreen = ({ t, goBack, lessonId }) => {
     setCompleting(true);
     try {
       await api.post(`/lessons/complete/${lessonId}`);
-      await refetch();        // ✅ Хэрэглэгчийн өгөгдлийг шинэчлэх
-      goBack();               // ✅ Буцах
+      await refetch();
+      goBack();
     } catch (err) {
+      if (err.response?.status === 403) openPay();
       console.error(err);
     } finally {
       setCompleting(false);
@@ -37,7 +41,27 @@ export const DetailScreen = ({ t, goBack, lessonId }) => {
   };
 
   if (loading) return <div style={{ padding: 28, textAlign: 'center' }}>🔄 Ачааллаж байна...</div>;
+  if (vipBlocked) {
+    return (
+      <div style={{ padding: '28px 32px', maxWidth: 760, margin: '0 auto' }}>
+        <div onClick={goBack} style={{ fontSize: 14, fontWeight: 600, color: 'var(--blue)', cursor: 'pointer', marginBottom: 20 }}>
+          <Icon name="arrow-left" size={16} /> {t('lesson.back')}
+        </div>
+        <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12, padding: 34, textAlign: 'center' }}>
+          <div style={{ width: 72, height: 72, borderRadius: 12, margin: '0 auto 18px', background: 'rgba(245,158,11,.14)', color: 'var(--amber)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="lock" size={38} />
+          </div>
+          <h2 style={{ margin: '0 0 8px' }}>VIP хичээл</h2>
+          <p style={{ color: 'var(--text2)', marginBottom: 20 }}>Энэ хичээлийг үзэхийн тулд VIP эрх идэвхжүүлнэ үү.</p>
+          <button onClick={openPay} style={{ padding: '12px 22px', borderRadius: 10, border: 'none', background: 'var(--blue)', color: '#fff', fontWeight: 800, cursor: 'pointer' }}>VIP авах</button>
+        </div>
+      </div>
+    );
+  }
   if (!lesson) return <div style={{ padding: 28, textAlign: 'center' }}>Хичээл олдсонгүй</div>;
+
+  // XSS-ээс хамгаалах
+  const sanitizedContent = DOMPurify.sanitize(lesson.content || lesson.description || 'Агуулга бэлтгэгдээгүй байна.');
 
   return (
     <div style={{ padding: '28px 32px', maxWidth: 900, margin: '0 auto' }}>
@@ -66,16 +90,6 @@ export const DetailScreen = ({ t, goBack, lessonId }) => {
         </span>
       </div>
 
-      <div style={{ background: 'var(--card)', borderRadius: 24, padding: '28px', border: '1px solid var(--border)', marginBottom: 28 }}>
-        <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, fontSize: 18, color: 'var(--text)' }}>
-          <Icon name="book-open" size={20} style={{ color: 'var(--blue)' }} /> Хичээлийн агуулга
-        </h3>
-        <div 
-          style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--text2)' }}
-          dangerouslySetInnerHTML={{ __html: lesson.content || lesson.description || 'Агуулга бэлтгэгдээгүй байна.' }}
-        />
-      </div>
-
       {lesson.videoUrl && (
         <div style={{ marginBottom: 28, borderRadius: 16, overflow: 'hidden', border: '1px solid var(--border)' }}>
           <iframe
@@ -89,6 +103,16 @@ export const DetailScreen = ({ t, goBack, lessonId }) => {
           ></iframe>
         </div>
       )}
+
+      <div style={{ background: 'var(--card)', borderRadius: 24, padding: '28px', border: '1px solid var(--border)', marginBottom: 28 }}>
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, fontSize: 18, color: 'var(--text)' }}>
+          <Icon name="book-open" size={20} style={{ color: 'var(--blue)' }} /> Хичээлийн агуулга
+        </h3>
+        <div
+          style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--text2)' }}
+          dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+        />
+      </div>
 
       <button
         onClick={completeLesson}

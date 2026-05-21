@@ -1,11 +1,12 @@
 import express from 'express';
-import { getProfile, getUserModules } from '../controllers/userController.js';
+import { getProfile, getUserModules, updateProfile, changePassword } from '../controllers/userController.js';
 import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Анхаар: энд /user гэж давхардахгүй, учир нь app.js дотор /api/user аль хэдийн заагдсан
 router.get('/user/profile', authMiddleware, getProfile);
 router.get('/user/modules', authMiddleware, getUserModules);
+router.put('/user/profile', authMiddleware, updateProfile);
+router.put('/user/change-password', authMiddleware, changePassword);
 
-export default router;
+export default router;   // <-- ЭНЭ МӨР ЗААВАЛ БАЙХ ЁСТОЙ

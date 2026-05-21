@@ -4,7 +4,7 @@ import { generateToken } from '../utils/generateToken.js';
 const otpStore = new Map();
 
 // ---------------------------
-// 1. Нэвтрэх
+// 1. Нэвтрэх (нууц үгээр)
 // ---------------------------
 export const login = async (req, res) => {
   const { phone, password } = req.body;
@@ -29,10 +29,9 @@ export const login = async (req, res) => {
 export const sendRegisterOtp = async (req, res) => {
   const { phone } = req.body;
   if (!phone) return res.status(400).json({ error: 'Утасны дугаар шаардлагатай' });
-  // Бүртгэлтэй эсэхийг шалгах
   const existingUser = await User.findOne({ phone });
   if (existingUser) {
-    return res.status(400).json({ error: 'Энэ дугаар аль хэдийн бүртгэлтэй байна. Нэвтрэх хэсэгт ороно уу.' });
+    return res.status(400).json({ error: 'Энэ дугаар аль хэдийн бүртгэлтэй байна.' });
   }
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   otpStore.set(phone, otp);
@@ -41,7 +40,7 @@ export const sendRegisterOtp = async (req, res) => {
 };
 
 // ---------------------------
-// 3. OTP баталгаажуулж, шинэ хэрэглэгч үүсгэх (ЗӨВХӨН БАЙХГҮЙ ҮЕД)
+// 3. OTP баталгаажуулж, шинэ хэрэглэгч үүсгэх
 // ---------------------------
 export const verifyRegisterOtp = async (req, res) => {
   const { phone, otp, password, fullName } = req.body;
@@ -54,22 +53,12 @@ export const verifyRegisterOtp = async (req, res) => {
   }
   otpStore.delete(phone);
 
-  // Дахин шалгах: энэ хооронд өөр хүсэлтээр хэрэглэгч үүсээгүй эсэх
-  const existingUser = await User.findOne({ phone });
-  if (existingUser) {
-    return res.status(400).json({ error: 'Энэ дугаар аль хэдийн бүртгэлтэй байна.' });
-  }
-
   // Шинэ хэрэглэгч үүсгэх
   const user = await User.create({
     phone,
     password,
     fullName: fullName || 'Шинэ хэрэглэгч',
-    shortName: fullName ? fullName.charAt(0) : 'Х',
-    totalXp: 0,
-    streakDays: 0,
-    rankName: 'Сумын Заан',
-    badgeCount: 0
+    shortName: fullName ? fullName.charAt(0) : 'Х'
   });
   const token = generateToken(user._id);
   res.json({ token, user: { id: user._id, phone: user.phone, fullName: user.fullName, xp: user.totalXp } });

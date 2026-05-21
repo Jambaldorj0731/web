@@ -72,6 +72,7 @@ body {
   background: var(--bg);
   color: var(--text);
   transition: background .3s, color .3s;
+  overflow-x: hidden;
 }
 /* Tablet (768px - 1024px) */
 @media (max-width: 1024px) {
@@ -85,6 +86,16 @@ body {
 
 /* Mobile (доор 768px) */
 @media (max-width: 768px) {
+  :root {
+    --sidebar: 0px;
+    --sidebar-collapsed: 0px;
+  }
+  html, body, #root {
+    min-width: 320px;
+  }
+  button, input, select, textarea {
+    font: inherit;
+  }
   .home-container {
     padding: 16px !important;
   }

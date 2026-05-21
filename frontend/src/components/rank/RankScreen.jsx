@@ -10,6 +10,7 @@ export const RankScreen = ({ t }) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isNarrow, setIsNarrow] = useState(false);
 
   const periods = [
     { value: 'weekly', label: 'Долоо хоног' },
@@ -20,6 +21,13 @@ export const RankScreen = ({ t }) => {
   useEffect(() => {
     fetchLeaderboard();
   }, [period, page, search]);
+
+  useEffect(() => {
+    const checkViewport = () => setIsNarrow(window.innerWidth <= 760);
+    checkViewport();
+    window.addEventListener('resize', checkViewport);
+    return () => window.removeEventListener('resize', checkViewport);
+  }, []);
 
   const fetchLeaderboard = async () => {
     setLoading(true);
@@ -51,14 +59,14 @@ export const RankScreen = ({ t }) => {
   }
 
   return (
-    <div style={{ padding: '28px 32px', maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ padding: isNarrow ? '18px 16px' : '28px 32px', maxWidth: 1200, margin: '0 auto' }}>
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 8 }}>{t('rank.pageTitle')}</h1>
         <p style={{ color: 'var(--text3)', fontSize: 14 }}>{t('rank.pageSub')}</p>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 24 }}>
-        <div style={{ display: 'flex', gap: 8, background: 'var(--bg1)', borderRadius: 40, padding: 4 }}>
+        <div style={{ display: 'flex', gap: 8, background: 'var(--bg1)', borderRadius: 40, padding: 4, overflowX: 'auto', maxWidth: '100%' }}>
           {periods.map(p => (
             <button
               key={p.value}
@@ -78,14 +86,14 @@ export const RankScreen = ({ t }) => {
             </button>
           ))}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg1)', borderRadius: 40, padding: '4px 16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg1)', borderRadius: 40, padding: '4px 16px', width: isNarrow ? '100%' : 'auto' }}>
           <Icon name="search" size={16} style={{ color: 'var(--text3)' }} />
           <input
             type="text"
             placeholder="Хэрэглэгч хайх..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            style={{ background: 'transparent', border: 'none', padding: '8px 0', outline: 'none', fontSize: 14, color: 'var(--text)', width: 200 }}
+            style={{ background: 'transparent', border: 'none', padding: '8px 0', outline: 'none', fontSize: 14, color: 'var(--text)', width: isNarrow ? '100%' : 200 }}
           />
         </div>
       </div>
@@ -105,7 +113,7 @@ export const RankScreen = ({ t }) => {
         </div>
       </div>
 
-      <div style={{ background: 'var(--card)', borderRadius: 24, overflow: 'hidden', border: '1px solid var(--border)' }}>
+      <div style={{ background: 'var(--card)', borderRadius: 24, overflowX: 'auto', border: '1px solid var(--border)' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '80px 60px 1fr 120px 100px', background: 'var(--bg1)', padding: '14px 20px', fontWeight: 700, fontSize: 13, color: 'var(--text2)', borderBottom: '1px solid var(--border)' }}>
           <div>Байр</div>
           <div></div>

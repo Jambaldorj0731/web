@@ -12,6 +12,7 @@ import { TestScreen } from './components/quiz/TestScreen';
 import { LegendsScreen } from './components/legends/LegendsScreen';
 import { RankScreen } from './components/rank/RankScreen';
 import { ProfileScreen } from './components/profile/ProfileScreen';
+import { AdminPanel } from './components/admin/AdminPanel';
 import { PayModal } from './components/payment/PayModal';
 import { Toast } from './components/common/Toast';
 import { I18N } from './i18n/translations';
@@ -24,12 +25,19 @@ function AppContent() {
   const [prev, setPrev] = useState(null);
   const [payOpen, setPayOpen] = useState(false);
   const [toast, setToast] = useState({ msg: '', type: '', visible: false });
+  const [isMobileLayout, setIsMobileLayout] = useState(() => window.innerWidth <= 768);
   const toastTimer = useRef(null);
   const { profile, modules, loading, error, refetch } = useUserData();
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', settings.theme);
   }, [settings.theme]);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobileLayout(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const showToast = useCallback((msg, type) => {
     if (toastTimer.current) clearTimeout(toastTimer.current);
@@ -51,7 +59,7 @@ function AppContent() {
     window.scrollTo(0, 0);
   }, [cur]);
 
-  const handleLogin = async (user) => {
+  const handleLogin = async () => {
     setLoggedIn(true);
     await refetch();
   };
@@ -72,24 +80,26 @@ function AppContent() {
     return <LoginPage onLogin={handleLogin} lang={settings.language} />;
   }
 
-  const sidebarWidth = settings.sidebarCollapsed ? 'var(--sidebar-collapsed)' : 'var(--sidebar)';
+  const sidebarWidth = isMobileLayout ? 0 : settings.sidebarCollapsed ? 'var(--sidebar-collapsed)' : 'var(--sidebar)';
   const lessonIdFromStorage = window.sessionStorage.getItem('currentLessonId');
+  const isAdmin = profile?.role === 'admin';
 
   const screens = {
     home: <HomeScreen t={t} goTo={goTo} onRetry={refetch} />,
-    lessons: <LessonsScreen t={t} goTo={goTo} showToast={showToast} />,
-    detail: <DetailScreen t={t} goBack={() => goTo(prev || 'lessons')} lessonId={lessonIdFromStorage} />,
-    test: <TestScreen t={t} showToast={showToast} />,
+    lessons: <LessonsScreen t={t} goTo={goTo} showToast={showToast} isVip={isVip} openPay={() => setPayOpen(true)} />,
+    detail: <DetailScreen t={t} goBack={() => goTo(prev || 'lessons')} lessonId={lessonIdFromStorage} openPay={() => setPayOpen(true)} />,
+    test: <TestScreen t={t} showToast={showToast} isVip={isVip} openPay={() => setPayOpen(true)} />,
     legends: <LegendsScreen showToast={showToast} isVip={isVip} openPay={() => setPayOpen(true)} />,
     rank: <RankScreen t={t} />,
-    profile: <ProfileScreen t={t} settings={settings} updateSettings={updateSettings} showToast={showToast} isVip={isVip} sub={sub} openPay={() => setPayOpen(true)} goTo={goTo} onLogout={logout} />
+    profile: <ProfileScreen t={t} settings={settings} updateSettings={updateSettings} showToast={showToast} isVip={isVip} sub={sub} openPay={() => setPayOpen(true)} goTo={goTo} onLogout={logout} />,
+    admin: isAdmin ? <AdminPanel t={t} showToast={showToast} /> : null,
   };
 
   return (
     <>
       <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
-        <Sidebar cur={cur} goTo={goTo} settings={settings} updateSettings={updateSettings} t={t} onLogout={logout} />
-        <main style={{ marginLeft: sidebarWidth, flex: 1, minHeight: '100vh', transition: 'margin-left .28s cubic-bezier(.4,0,.2,1)', overflowX: 'hidden' }}>
+        <Sidebar cur={cur} goTo={goTo} settings={settings} updateSettings={updateSettings} t={t} onLogout={logout} isAdmin={isAdmin} isMobileLayout={isMobileLayout} />
+        <main style={{ marginLeft: sidebarWidth, flex: 1, minHeight: '100vh', transition: 'margin-left .28s cubic-bezier(.4,0,.2,1)', overflowX: 'hidden', paddingBottom: isMobileLayout ? 86 : 0 }}>
           {loading && cur === 'home' ? <div style={{ padding: 28, textAlign: 'center' }}>🔄 Ачааллаж байна...</div> : screens[cur] || screens.home}
         </main>
       </div>
