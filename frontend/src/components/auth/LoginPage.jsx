@@ -1,8 +1,22 @@
 import { useState } from 'react';
 import { Icon } from '../common/Icon';
-import { MongolLandscape } from '../common/MongolLandscape';
 import api from '../../services/api';
 import { I18N } from '../../i18n/translations';
+
+const loginBgImages = import.meta.glob('../common/*.{jpg,jpeg,JPG,JPEG}', {
+  eager: true,
+  import: 'default'
+});
+const LOGIN_BACKGROUND_IMAGE =
+  Object.values(loginBgImages)[0] || '/images/mongol-landscape.svg';
+
+const coverImageStyle = {
+  position: 'absolute',
+  inset: 0,
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover'
+};
 
 export const LoginPage = ({ onLogin, lang }) => {
   const t = (k) => I18N[lang]?.[k] || I18N.mn[k] || k;
@@ -29,7 +43,7 @@ export const LoginPage = ({ onLogin, lang }) => {
       localStorage.setItem('token', res.data.token);
       onLogin(res.data.user);
     } catch (err) {
-      setError(err.response?.data?.error || 'Нэвтрэхэд алдаа гарлаа');
+      setError(err.response?.data?.error || 'Error');
     } finally {
       setLoading(false);
     }
@@ -111,7 +125,13 @@ export const LoginPage = ({ onLogin, lang }) => {
   return (
     <div style={{ minHeight: '100vh', background: '#050A14', display: 'flex', alignItems: 'stretch' }}>
       <div style={{ flex: 1, position: 'relative', overflow: 'hidden', minHeight: 420 }}>
-        <MongolLandscape />
+        <img src={LOGIN_BACKGROUND_IMAGE} alt="" style={coverImageStyle} />
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(90deg, rgba(5,10,20,.18), rgba(5,10,20,.62))',
+          pointerEvents: 'none'
+        }} />
       </div>
       <div style={{ width: 480, flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '52px 48px', background: '#050A14' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 36 }}>

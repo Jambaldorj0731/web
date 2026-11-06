@@ -6,10 +6,15 @@ export const PayModal = ({ open, onClose, t, onConfirm }) => {
   const [method, setMethod] = useState('qpay');
   const [loading, setLoading] = useState(false);
 
-  const confirm = () => {
+  const confirm = async () => {
     if (loading) return;
     setLoading(true);
-    setTimeout(() => { onConfirm(plan, method); setLoading(false); onClose(); }, 1600);
+    try {
+      await onConfirm(plan, method);
+      onClose();
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!open) return null;

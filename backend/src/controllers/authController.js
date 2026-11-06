@@ -36,7 +36,7 @@ export const sendRegisterOtp = async (req, res) => {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   otpStore.set(phone, otp);
   console.log(`📱 Бүртгүүлэх OTP for ${phone}: ${otp}`);
-  res.json({ message: 'OTP илгээгдлээ', demoOtp: otp });
+  res.json({ message: 'OTP илгээгдлээ' });
 };
 
 // ---------------------------

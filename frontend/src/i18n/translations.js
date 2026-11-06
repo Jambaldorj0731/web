@@ -78,7 +78,7 @@ export const I18N = {
     "toast.notifyOff": "Мэдэгдэл унтраалттай",
     "toast.languageSaved": "Хэл солигдлоо",
     "toast.loggedOut": "Системээс гарлаа",
-    "toast.legendVipBooking": "VIP уулзалтын цаг захиалга илгээгдлээ (демо)",
+    "toast.legendVipBooking": "VIP уулзалтын цаг захиалга илгээгдлээ",
     "toast.vipIslandOpen": "Уламжлалт бичгийн арал нээгдлээ!",
 
     // Payment
@@ -91,9 +91,9 @@ export const I18N = {
     "pay.perYear": "/ жил · ~₮8,250/сар",
     "pay.methodLabel": "Төлбөрийн арга",
     "pay.bankCard": "Карт",
-    "pay.payBtn": "Төлбөр төлөх (демо)",
+    "pay.payBtn": "Төлбөр төлөх",
     "pay.processing": "Баталгаажуулж байна…",
-    "pay.disclaimer": "Энэ нь демо урсгал: жинхэнэ төлбөр таны сервер/QPay API-тай холбогдож баталгаажина.",
+    "pay.disclaimer": "Төлбөр баталгаажсаны дараа VIP эрх автоматаар идэвхжинэ.",
     "pay.success": "Төлбөр амжилттай. VIP идэвхиллээ.",
     "pay.profileHintMonth": "VIP · сарын багц",
     "pay.profileHintYear": "VIP · жилийн багц",
@@ -184,7 +184,7 @@ export const I18N = {
     "toast.notifyOff": "Notifications off",
     "toast.languageSaved": "Language updated",
     "toast.loggedOut": "Signed out",
-    "toast.legendVipBooking": "VIP meeting request sent (demo)",
+    "toast.legendVipBooking": "VIP meeting request sent",
     "toast.vipIslandOpen": "Script heritage island unlocked!",
 
     // Payment
@@ -197,9 +197,9 @@ export const I18N = {
     "pay.perYear": "/ year · ~₮8,250/mo",
     "pay.methodLabel": "Payment method",
     "pay.bankCard": "Card",
-    "pay.payBtn": "Pay now (demo)",
+    "pay.payBtn": "Pay now",
     "pay.processing": "Confirming…",
-    "pay.disclaimer": "Demo only — production payments require your backend and a gateway (e.g. QPay).",
+    "pay.disclaimer": "VIP access activates automatically after payment confirmation.",
     "pay.success": "Payment successful. VIP is active.",
     "pay.profileHintMonth": "VIP · monthly",
     "pay.profileHintYear": "VIP · yearly",
