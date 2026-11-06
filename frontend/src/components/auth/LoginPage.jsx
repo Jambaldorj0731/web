@@ -43,7 +43,7 @@ export const LoginPage = ({ onLogin, lang }) => {
       localStorage.setItem('token', res.data.token);
       onLogin(res.data.user);
     } catch (err) {
-      setError(err.response?.data?.error || 'Error');
+      setError(err.response?.data?.error || '404notfound');
     } finally {
       setLoading(false);
     }
